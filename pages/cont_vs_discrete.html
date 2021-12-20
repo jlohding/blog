@@ -1,0 +1,99 @@
+title: Continuous versus discrete trading system forecasts
+date: 22 Dec 2021
+author: Jerry Loh
+description: Discussing the multi-portfolio benefits of adopting continuous forecasts instead of binary trading signals.
+tags: programming research
+
+
+<h3 class="blog-content-paragraphs lh-base">
+    In Robert Carver's <i>Systematic Trading</i>, he details a rather unorthodox way of building trading systems: Instead of 
+    applying a binary entry/exit signal on some trading strategy, we treat a trading strategy/rule as a function that outputs a 
+    forecast value \in ∈ [-20, 20], where the sign of the forecast determines long/short, and the absolute value determines 
+    the optimal portfolio allocation size. This is referred to as the <b>continuous</b> trading system, as opposed to a discrete or binary one.
+    <br><br>
+    For example, take a simple trendfollowing strategy:
+    <ul class="tag-list-ul">
+        <li class="li"><b>Long</b> when a shorter-window moving average price is higher than a longer-window moving average.</li>
+        <li class="li"><b>Short</b> when a shorter-window moving average price is lower than a longer-window moving average.</li>
+    </ul>
+    In Python this can be quickly represented as:
+    <pre>
+        <code class="bg-light bg-opacity-25 language-python">
+        import pandas as pd
+        price_series = pd.Series(some_price_data)
+        fast, slow = 10, 20 # arbitrary parameters
+        fast_sma = price_series.rolling(fast).mean()
+        slow_sma = price_series.rolling(slow).mean()
+        </code>
+    </pre>
+    For the binary system, the trading signal occurs when the fast_sma crosses the slow_sma
+    <pre>
+        <code class="bg-light bg-opacity-25 language-python">
+        for t in time:
+            buy() if fast_sma.iloc[t] > slow_sma.iloc[t] else sell()
+        </code>
+    </pre>
+    For the continuous system, the forecast (and hence position size) scales according to 
+    the sign and magnitude of divergence between the fast_sma and slow_sma
+    <pre>
+        <code class="bg-light bg-opacity-25 language-python">
+        for t in time:
+            forecast = (fast_sma.iloc[t] - slow_sma.iloc[t]) 
+            trade(size=forecast)
+        </code>
+    </pre>
+    We can visualise these two functions with simple graphs: It is clear that for continuous systems, the nature of the 
+    forecast function allows our position size to scale linearly with the strength of the signal.
+    <div class="row flex-nowrap py-5">
+    <div class="col">
+    <img class="d-block mx-auto mb-3" src="/static/img/cont_forecast.png" alt="" width="640" height="480">
+    </div>
+    <div class="col">
+    <img class="d-block mx-auto mb-3" src="/static/img/discrete_forecast.png" alt="" width="640" height="480">
+    </div>
+    </div>
+
+
+
+    Each of these forecast functions then can be concatenated (after some normalisation) into a singular portfolio forecast which tells our
+    trading system the optimal position size for each asset at that point in time. 
+    <br><br>
+
+    I have found such an approach to have immense benefits in terms of combining multiple strategies (which may sometimes have opposing 
+    forecasts for a single instrument) into a singular forecast in a normalised manner.
+    <br><br>Personally, I have designed my systematic trading system to do the following:
+    <ul class="tag-list-ul">
+        <li class="li">Take in the forecast function for a strategy based on my models</li>
+        <li class="li">At runtime \(t\), the forecast function computes the optimal forecast \(F_t\) ∈ [-2, 2]</li>
+        <li class="li">At runtime \(t\), we find the rolling risk/standard deviation of the asset \(\sigma_t\)</li>
+        <li class="li">Given some cash target volatility limit $\(V_t\), we can obtain a risk-normalised expected position size 
+            by taking \(\frac{$V_t}{\sigma_t}\)
+        </li>
+        <li class="li">Multiplying by the forecast, we can obtain the optimal position size \(p_t\) at time \(t\) based on the forecast, as well
+            as adjusted for volatility: 
+            $$p_t =  \frac{$V_t}{\sigma_t}(F_t)$$
+        </li>
+        <li class="li">As seen, the system can scale the position up to 2x the expected position size value when we get
+            a particularly strong signal in either direction.</li>
+        <li class="li">It is also quite simple to combine this forecast with another for the same asset; simply compute the combined forecast
+            based on some weight \(w_i\), where \(\sum_{i=0}^n w_i = 1\) given to each strategy:
+            $$ CombinedForecast_t = \sum_{i=0}^n (p_{t,i})(w_i)  $$
+        </li>
+    </ul>
+
+    <br>Under a binary/discrete system, it would be very difficult
+    to concatenate different forecasts for a single instrument together, given that there is no differentiation between a <b>buy</b> signal from a 
+    <b>strong buy</b> signal and vici versa. Intuitively, it also makes sense that we would want a larger portfolio allocation to a stronger signal 
+    (for example, when the <b>fast_sma</b> is much larger than the <b>slow_sma</b>)
+    <br><br>
+    Better integration of different strategies into a single system allows for large improvements to Sharpe ratio: 
+    As the covariance between two distinct strategies will always be less than 1, 
+    (otherwise you are trading the exact same strategy twice...), the overall portfolio risk falls. Ceteris paribus, the Sharpe ratio increases.
+    <br>(I wrote about the mathematical proof and systematic investing <a class="fw-bold" href="/blog/systematic_investing.html">here</a>)
+    
+    <br><br>
+    Such an approach also makes mathematical/statistical analysis much easier to handle, given that we now have a continuous function
+    for each forecast with respect to the signal data. It also reduces parameterisation and the number of explanatory variables 
+    we need in a model, which in general reduces overfitting and improves performance.
+    <br><br>
+</h3>
