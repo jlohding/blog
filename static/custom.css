@@ -1,0 +1,111 @@
+html,body {
+    background-color: rgb(248, 204, 210);
+}
+
+h1, h2 {
+    font-family: 'Playfair Display', serif, 'Times New Roman', Times, serif;
+}
+
+h3, h4, p, a{
+    font-family: 'Merriweather', serif;
+}
+
+.blog-header {
+    line-height: 1;
+    border-bottom: 2px solid #221d1e;
+  }
+
+.blog-header-logo {
+    color: rgb(24, 23, 23);
+    font-family: 'Playfair Display', serif, 'Times New Roman', Times, serif;
+    font-size: 3rem;
+    text-decoration: none;
+}
+
+.blog-header-logo:hover {
+    color:rgb(207, 55, 28);
+}
+
+.active {
+    color: rgb(24, 23, 23);
+    font-family: 'Merriweather', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.active:hover {
+    color:rgb(24, 23, 23);
+}
+
+.nav-link {
+    color:rgb(207, 55, 28);
+    font-family: 'Merriweather', serif;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.nav-link:hover {
+    color:rgb(24, 23, 23);
+}
+
+.footer-text {
+    font-weight: normal;
+}
+
+.hello-text {
+    font-family: 'Playfair Display', serif, 'Times New Roman', Times, serif;
+}
+
+.btn-blog, .btn-about {
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 700;
+    text-decoration: none;
+    color: rgb(253, 229, 232);
+
+}
+
+.btn-blog:hover, .btn-about:hover {
+    color: rgb(207, 55, 28);
+}
+
+.skill-name {
+    text-decoration: none;
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 500;
+    color: black;
+}
+
+.skill-name:hover {
+    color: black;
+}
+
+.all-posts-title {
+    font-family: 'Playfair Display', serif, 'Times New Roman', Times, serif;
+    border-bottom: 1px solid #221d1e;
+}
+
+.blog-title {
+    font-family: 'Playfair Display', serif, 'Times New Roman', Times, serif;
+    border-bottom: none;
+}
+
+.blog-title:hover {
+    text-decoration:underline;
+}
+
+.tags-item {
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 300;
+    color: rgb(121, 36, 21);
+}
+
+.tag-list-ul {
+    list-style-type:circle;
+}
+
+.inline-tag-list-ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}

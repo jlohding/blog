@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}
+    About Me
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-1 py-5">
+        </div>
+        <div class="col-sm-10 col-md-5 py-5">
+            <span class="hello-text display-1">Jerry Loh</span>
+            <p class="lead pt-3 mb-4 fw-bolder">
+                Hobbyist algorithmic trader, undergraduate student</br>(Quantitative Finance and Statistics)
+            </p>
+            <p class="lead pt-1 mb-4">
+                I am an undergraduate student in the National University of Singapore with an interest in building 
+                systematic trading systems and mathematical/statistical applications in quantitative finance and financial technology.</br></br>
+                I actively develop and run my own automated trading system (which can be found on my
+                <a href="{{ url_for('ext_links', site='arbitrade') }}" class="link-primary">Github</a>).</br></br>
+                I also maintain a blog on systematic trading and other subdomains related to it
+                <a href="{{ url_for('blog_page') }}" class="link-primary">here</a>.
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-1 col-md-2">
+        </div>
+        <div class="col-sm-10 col-md-8 text-center">
+            <span class="hello-text display-1">Skills</span>
+            <p class="lead py-2 mb-4">
+                <div class="row flex-nowrap">
+                    <div class="col">
+                        <img class="d-block mx-auto mb-3" src="/static/icons/python.svg" alt="" width="90" height="90">
+                        <a class ="skill-name">Python</a>
+                    </div>
+                    <div class="col">
+                        <img class="d-block mx-auto mb-3" src="/static/icons/pandas.svg" alt="" width="90" height="90">
+                        <a class ="skill-name">Pandas</a>
+                    </div>
+                    <div class="col">
+                        <img class="d-block mx-auto mb-3" src="/static/icons/numpy.svg" alt="" width="90" height="90">
+                        <a class ="skill-name">NumPy</a>
+                    </div>
+                    <div class="col">
+                        <img class="d-block mx-auto mb-3" src="/static/icons/postgres.svg" alt="" width="90" height="90">
+                        <a class ="skill-name">PostgreSQL</a>
+                    </div>
+                </div>
+                <div class="row flex-nowrap pt-5">
+                    <div class="col">
+                        <img class="d-block mx-auto mb-3" src="/static/icons/mysql.svg" alt="" width="90" height="90">
+                        <a class ="skill-name">mySQL</a>
+                    </div>
+                    <div class="col">
+                        <img class="d-block mx-auto mb-3" src="/static/icons/linux.svg" alt="" width="90" height="90">
+                        <a class ="skill-name">Linux</a>
+                    </div>
+                    <div class="col">
+                        <img class="d-block mx-auto mb-3" src="/static/icons/bash.svg" alt="" width="90" height="90">
+                        <a class ="skill-name">Bash</a>
+                    </div>
+                    <div class="col">
+                        <img class="d-block mx-auto mb-3" src="/static/icons/git.svg" alt="" width="90" height="90">
+                        <a class ="skill-name">Git</a>
+                    </div>
+                </div>
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6 py-3">
+        </div>
+        <div class="col-sm-10 col-md-5 py-5 text-end">
+            <span class="hello-text display-1">Contact</span>
+            <p class="lead py-2 mb-4">
+                Feel free to contact me via the following:
+            </p>
+            <div class="row flex-nowrap float-end">
+                <div class="col">
+                    <a href="{{ url_for('ext_links', site='github') }}"><img class="d-block mx-auto mb-3" 
+                        src="/static/icons/github.svg" alt="" width="60" height="60"></a>
+                </div>
+                <div class="col">
+                    <a href="{{ url_for('ext_links', site='linkedin') }}"><img class="d-block mx-auto mb-3" 
+                        src="/static/icons/linkedin.svg" alt="" width="60" height="60"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

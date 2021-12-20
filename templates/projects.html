@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Projects
+{% endblock %}
+
+{% block content %}
+<main class="container py-4">
+    <div class="p-4 p-md-5 mb-4 text-white rounded bg-dark">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2 class="display-4 fst-italic">Arbitrade</h2>
+                <p class="lead my-3">
+                    My live Python3/PostgreSQL algorithmic trading system, which I continue to improve and maintain.
+                </p>
+                <!--- <p class="lead mb-0"><a href="#" class="text-white fw-bold">Read more...</a></p> --->
+            </div>
+            <div class="col-md-6">
+                <a href="{{ url_for('ext_links', site='arbitrade') }}"><img class="d-block float-end mx-5" 
+                    src="/static/icons/white-github.svg" alt="" width="110" height="110"></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="p-4 p-md-5 mb-4 text-white rounded bg-white bg-opacity-50">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2 class="display-4 fst-italic text-dark">Static Flask Blog</h2>
+                <p class="lead my-3 text-dark">
+                    My personal website / quantitative finance blog Arbitrage Against The Machine, which is what you are on right now, written with Flask/Bootstrap.
+                </p>
+                <!--- <p class="lead mb-0"><a href="#" class="text-white fw-bold">Read more...</a></p> --->
+            </div>
+        </div>
+    </div>
+
+
+    <div class="p-4 p-md-5 mb-4 text-white rounded bg-light bg-opacity-25">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2 class="display-4 fst-italic text-dark">Coming soon...</h2>
+                <p class="lead my-3 text-dark">
+                    I'm currently working on a poker application in Python which prices certain contracts/bets on the outcome of a game based on 
+                    the current game state.
+                </p>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

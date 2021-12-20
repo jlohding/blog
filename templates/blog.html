@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Blog
+{% endblock %}
+
+{% block content %}
+<main class="container pt-4">
+    <div class="p-4 p-md-5 mb-4 text-white rounded bg-dark">
+        <div class="col-md-6 px-0">
+          <h2 class="display-4 fst-italic">{{ pages[0].title }}</h2>
+          <p class="lead my-3">{{ pages[0].description }}</p>
+          <p class="lead mb-0"><a href="/blog/{{ pages[0].path }}.html" class="text-white fw-bold">Continue reading...</a></p>
+        </div>
+    </div>
+    <div class="row align-items-md-stretch ">
+      <div class="col-md-6">
+        <div class="h-100 p-5 text-white bg-dark rounded-3">
+            <h2>{{ pages[1].title }}</h2>
+            <p>{{ pages[1].description }}</p>
+            <p>{{ pages[1].date }}</p>
+            <a href="/blog/{{ pages[1].path }}.html" class="btn btn-outline-light" type="button">Read more</a>
+        </div>
+      </div>
+        <div class="col-md-6">
+          <div class="h-100 p-5 bg-light bg-opacity-50 border rounded-3">
+            <h2>{{ pages[2].title }}</h2>
+            <p>{{ pages[2].description }}</p>
+            <p>{{ pages[2].date }}</p>
+            <a href="/blog/{{ pages[2].path }}.html" class="btn btn-outline-dark" type="button">Read more</a>
+          </div>
+        </div>
+    </div>
+    <div class="row g-5 py-1">
+        <div class="col-md-8">
+            <p class="all-posts-title display-5 py-3">All Posts</p>
+            {% for page in filter_pages %}
+            <div class="row">
+                <div class="col-8">
+                    <a class="text-decoration-none" href="/blog/{{ page.path }}.html"><h2 class="blog-title text-dark">{{ page.title }}</h2></a>
+                </div>
+                <div class="col text-end">
+                    <p class="date-item">{{ page.date }}</p>
+                </div>
+            </div>
+            <p class="py-1">{{ page.description }}</p>
+                {% for tag in page.tags.split() %}
+                <ul class="inline-tag-list-ul d-inline-block">
+                    <li><a class="tags-item text-uppercase text-dark pe-4" href="{{ url_for('blog_page', filter_tag=tag) }}">{{ tag }}</a></li>
+                </ul>
+                {% endfor %}
+            </p>
+            <hr>
+            {% endfor %}
+        </div>
+        <div class="col-md-4 py-4">
+        <div class="p-4 mb-3 bg-light bg-opacity-25 rounded">
+            <p class="h4 fw-bolder">About the blog</p>
+            <p class="mb-0">I write about systematic trading systems, from the software engineering to the mathematical research side of things.</p>
+        </div>
+        <div class="col py-2">
+            <div class="p-4 mb-3 bg-light bg-opacity-25 rounded">
+                <p class="h4 fw-bolder">Archive</p>
+                <ul class="tag-list-ul">
+                    {% set unique_dates = [] %}
+                    {% for page in pages %}
+                        {{ unique_dates.append(" ".join(page.date.split()[1:])) or '' }}
+                    {% endfor %}
+                    {% for d in unique_dates|unique %} 
+                        <li><a class="tags-item" href="{{ url_for('blog_page', filter_tag=d) }}">{{ d }}</a></li>
+                    {% endfor %} 
+                </ul>
+            </div>
+            <div class="p-4 mb-3 bg-light bg-opacity-25 rounded">
+                <p class="h4 fw-bolder">Tags</p>
+                <ul class="">
+                    {% set unique_tags = [] %}
+                    {% for page in pages %}
+                        {% for tag in page.tags.split()|unique %}
+                            {{ unique_tags.append(tag) or '' }}
+                        {% endfor %}
+                    {% endfor %}
+                    {% for tag in unique_tags|unique %} 
+                        <li><a class="tags-item" href="{{ url_for('blog_page', filter_tag=tag) }}">{{ tag }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
