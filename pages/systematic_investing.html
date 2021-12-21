@@ -1,0 +1,179 @@
+title: Systematic Investing and Portfolio Optimisation
+date: 22 Dec 2021
+author: Jerry Loh
+description: Looking at mean-variance optimisation, cVaR-optimisation, ES-optimisation for long-term investment portfolios in 2021/2022.
+tags: math statistics research
+
+<h3 class="blog-content-paragraphs lh-base">
+    In this post I will attempt to find out if it is worth applying volatility normalisation and systematic investing techniques like 
+    mean-variance optimsation instead of just a simple buy-and-hold on the S&P500. 
+    <br><br>
+    First, let us consider why we would attempt to diversify systematic investment between asset classes, given that we have some 
+    implicit knowledge that a pure-equity portfolio would in general outperform (in absolute returns) a diversified one. 
+    <br><br>
+
+    For this study we will track the S&P500 index with the SPDR S&P 500 ETF Trust (SPY), for a dataset from 2003-2021:
+    <pre class="pb-3">
+    <code class="bg-light bg-opacity-25 language-python">
+    import datetime as dt
+    import pandas as pd
+    import numpy as np
+
+    df = pd.read_csv(dataset, names=["Date","Open","High","Low","Close","Volume"])
+
+    df["Date"] = pd.to_datetime(df["Date"])
+    df["Log Return"] = np.log(df["Close"]/df["Close"].shift(1))
+    
+    yearly_log_ret = df["Log Return"].groupby([df['Date'].dt.year]).sum()
+    target_years = yearly_log_ret.loc[2003:2021]
+
+    mean = target_years.mean() # 0.103
+    std = target_years.std() # 0.163
+    </code></pre>
+    
+    We observe that the historical SPY has a mean annualised log return \(E[R]=0.103\) with an annual standard deviation
+    \(\sigma=0.163\). For simplicity of calculations,
+    I will assume that the risk-free rate of return is \(r_f=0\). This will allow us to simply calculate the Sharpe, which will be our
+    measure of risk-adjusted returns:
+    $$ S_{SPY} = \frac{E[R-r_f]}{\sigma} = 0.632$$
+    
+    When we repeat this process for US treasury bonds, using the iShares Core U.S. Aggregate Bond ETF (AGG) as our tracking asset in 
+    the same period, we obtain \(E[R]=0.0370\) and \(\sigma=0.030\)
+    $$ S_{AGG} = \frac{E[R-r_f]}{\sigma} = 1.234$$
+    
+    As shown, the Sharpe ratio for AGG is much better than the SPY, but offers much lower absolute returns. And so there must be 
+    some portfolio combination of the two which maximises the Sharpe. This is the famous Markowitz mean-variance optimisation.
+    <br><br>
+    We also know that a portfolio with more assets tends to have a higher Sharpe ratio than a similar, less diversified portfolio. The
+    mathematical reason behind this can be proven as follows:<br>
+    The portfolio variance \(\sigma^2_p\) for \(n\) assets with weights \(w_i\) where \(\sum_{i}^nw_i=1\) is: 
+
+    $$ \sigma^2_p = \sum_{i=1}^n\sum_{j=1}^n w_iw_j\sigma_{i,j} $$
+
+    Since \(\sigma_{i,i} = \sigma^2_{i}\) and \(\sigma_{i,j} = \sigma_{j,i}\) we can split the expression up as follows:
+
+    $$ \sigma^2_p = \sum_{i=1}^n w^2_i\sigma^2_i + \sum_{i=1}^n\sum_{j\neq{i}} w_iw_j\sigma_{i,j}$$
+
+    Given a portfolio of \(n\) <b>equally-weighted</b> assets, where \(w_i\) = \(\frac{1}{n} \forall i\)
+    $$ \sigma^2_p = \frac{1}{n^2} \sum_{i=1}^n \sigma^2_i + \frac{1}{n^2} \sum_{i\neq{j}}^n \sigma_{i,j} $$
+
+    Let the average variance be \(\bar\sigma^2\) and average covariance be \(\bar\phi\), where
+    $$ \bar\sigma^2 = \frac{1}{n}\sum_{i=1}^n\sigma^2_i $$
+    $$ \bar\phi = \frac{1}{n(n-1)}\sum_{i\neq{j}}^n\sigma_{i,j} $$
+
+    Subbing these two expressions, we obtain:
+    $$ \sigma^2_p = \frac{1}{n} \cdot \bar\sigma^2 + \frac{n-1}{n} \cdot \bar\phi $$
+
+    Let \(\bar\sigma^2 \to \sigma^2\) and \(\bar\phi\ \to \phi\) as \(n\to\infty\) (number of assets/diversification increases):
+    $$ \lim_{n\to \infty}\sigma^2_p = \phi $$
+
+    As such, we can see that as diversification increases, the portfolio risk/variance falls and tends to the covariance/market-wide risk level.
+    Given that the portfolio variance falls as diversification increases, the Sharpe ratio should increase given an unchanged expected 
+    portfolio return.
+
+    <br><br>
+    We can optimise for Sharpe ratio of a portfolio of SPY and AGG by taking the daily log returns and variances, and forming an equation of 
+    portfolio variance w.r.t the expected portfolio return. 
+    <br><br>
+    To overcome the problem of having only access to a single sample, we can 
+    use bootstrapping to obtain estimators for portfolio return \(\hat\mu_p\) and portfolio variance \(\hat\sigma^2_p\). We can
+    then form the equation needed and take its first order differential to optimise for Sharpe ratio.
+    <br>We can do this in Python like so:
+    <pre class="pb-3">
+        <code class="bg-light bg-opacity-25 language-python">
+    import numpy as np
+    import seaborn as sns
+    
+    bootstrap_returns = []
+    bootstrap_variances = []
+    
+    log_returns = df["Log Return"].loc["2003-01-01":"2021-12-31"]
+    
+    for _ in range(10000):
+        sample = np.random.choice(log_returns, 
+                                    replace=True, 
+                                    size=252)
+        ret = np.sum(sample)
+        variance = np.var(sample)
+        bootstrap_returns.append(ret)
+        bootstrap_variances.append(variance)
+    
+    returns = np.array(bootstrap_returns)    
+    variances = np.array(bootstrap_variances)
+    
+    mu_hat = np.mean(returns)
+    mu_95_ci = np.quantile(returns, [0.025,0.975])
+    
+    var_hat = np.mean(variances)
+    var_95_ci = np.quantile(variances, [0.025,0.975])
+    
+    # plot bootstrap
+    ax = sns.histplot(returns, kde=True, cumulative=True) # CDF
+    ax.set(xlabel="annualised log return", ylabel="density", 
+        title=f"{asset} annualised log returns CDF")
+    
+    ax = sns.histplot(variances, kde=True, cumulative=True) # CDF
+    ax.set(xlabel="annualised variance", ylabel="density", 
+        title=f"{asset} annualised variance CDF")
+    
+    ax = sns.histplot(returns, kde=True, cumulative=False) # PDF
+    ax.set(xlabel="annualised log return", ylabel="density", 
+        title=f"{asset} annualised log returns PDF")
+    
+    ax = sns.histplot(variances, kde=True, cumulative=False) # PDF
+    ax.set(xlabel="annualised variance", ylabel="density", 
+        title=f"{asset} annualised variance PDF")        
+        </code></pre>
+    
+    <b>SPY log returns:</b>
+    <div class="row flex py-5">
+        <div class="col">
+        <img class="d-block mx-auto mb-3" src="/static/img/spy_pdf.png" alt="" width="560" height="420">
+        </div>
+        <div class="col">
+        <img class="d-block mx-auto mb-3" src="/static/img/spy_cdf.png" alt="" width="560" height="420">
+        </div>
+    </div>
+    <b>AGG log returns:</b>
+    <div class="row flex py-5">
+        <div class="col">
+        <img class="d-block mx-auto mb-3" src="/static/img/agg_pdf.png" alt="" width="560" height="420">
+        </div>
+        <div class="col">
+        <img class="d-block mx-auto mb-3" src="/static/img/agg_cdf.png" alt="" width="560" height="420">
+        </div>
+    </div>
+
+    <b>The results:</b>
+    <div class="row">
+        <div class="col">
+            $$ \hat\mu_{SPY} = 0.0998 $$
+            $$ \hat\mu_{SPY} \; CI_{0.95} = [-0.272, 0.462] $$
+            $$ \hat\sigma_{SPY} = 0.0119 $$
+            $$ \hat\sigma_{SPY} \; CI_{0.95} = [0.00935, 0.0149] $$
+            
+        </div>
+        <div class="col">
+            $$ \hat\mu_{AGG} = 0.0388 $$
+            $$ CI_{0.95} = [-0.0659, 0.135] $$
+            $$ \hat\sigma_{AGG} = 0.00319 $$
+            $$ \hat\sigma_{AGG} \; CI_{0.95} = [0.00220, 0.00589] $$
+        </div>
+    </div>
+    
+    <b>Note</b> how the SPY population standard deviation \(\sigma_{SPY} = 0.163\) is outside the 95% confidence interval of the estimator.
+    This is a flaw of such an approach, since SPY exhibits quite significant negative skew but our model
+    assumes that prices are log-normally distributed.
+    <br><br>
+    Now we can obtain the equation for the mean-variance optimisation:
+    <br>For a portfolio weight vector \(\omega = \begin{pmatrix}a \\\ 1-a\end{pmatrix}\)
+    $$ \mu_p = a \cdot \mu_{SPY} + (1-a) \cdot \mu_{AGG} $$ 
+    $$ \sigma^2p = a^2 \cdot $$
+
+
+    <br><br>
+    <br><br>
+    <br><br>
+
+
+</h3>
