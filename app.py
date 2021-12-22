@@ -44,7 +44,10 @@ def ext_links(site):
     sites = {
         "github": "https://www.github.com/jlohding",
         "arbitrade": "https://www.github.com/jlohding/arbitrade",
-        "blog_github": "https://www.github.com/jlohding/arbitrade",
+        "blog_github": "https://www.github.com/jlohding/blog",
         "linkedin": "https://www.linkedin.com/in/jerryloh2000",
     }
     return redirect(sites[site], code=302)
+
+if __name__ == "__main__":
+    app.run(debug=False, use_reloader=True)
