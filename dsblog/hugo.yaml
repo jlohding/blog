@@ -21,7 +21,7 @@ menu:
 params:
   homeInfoParams:
     Title: Hi there!
-    Content: This is my technical blog where I write about my work in data science and statistics.
+    Content: This is my technical blog where I write about my work in data science and statistics. 
 
   socialIcons: # optional
     - name: Github

@@ -2,21 +2,16 @@
 title = 'CV'
 +++
 
-This is my CV.
+My main interests involve quantitative finance, NLP, and computational statistics.
 
-## Education
+### Education
 Bachelor of Science (Hons) in Statistics - National University of Singapore
 - Specialisation in Data Science
 - Minor in Computer Science
 
-## Experience
-Data Scientist - Julius Baer
+### Experience
+Data Scientist Intern - Julius Baer
 
-Quant Researcher - Institute for Mathematical Sciences / Cubist Systematic Strategies
+Quant Researcher Intern - IMS NUS / Cubist Systematic Strategies
 
-Quant Analyst - VI Fund Management
-
-## Others
-Researcher - NUS Business School
-
-Tech Lead - NUS Fintech Society
+Quant Analyst Intern - VI Fund Management

@@ -1,6 +1,6 @@
 +++
 title = 'Reverse-mode autodiff from scratch'
-date = 2024-06-07T18:07:54+08:00
+date = 2024-06-07
 math = true
 +++
 
@@ -119,7 +119,3 @@ We have successfully implemented simple automatic differentiation from scratch
 by representing variables in an expression tree. While the concept seems
 trivial, it is pretty key to understanding how optimisation in machine learning
 works.
-
-
-
-
